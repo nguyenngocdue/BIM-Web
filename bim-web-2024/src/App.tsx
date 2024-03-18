@@ -1,12 +1,32 @@
-import { useState } from 'react'
+import { ToastContainer } from 'react-toastify';
+// import "react-toastify/diat/ReactToastify.css"
 import './App.css'
-import Hello from './components/Hello'
+import { useEffect, useRef } from 'react';
+import { ThreeJS } from './bimModel';
 
 function App() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    console.log("Init");
+    const threeJs = new ThreeJS(containerRef.current!);
+    return () => {
+      console.log("Dispose!");
+      threeJs?.dispose();
+    }
+  }, [])
+
+
 
   return (
     <>
-      <Hello />
+      <div className="relative h-full w-full bg-indigo-300" ref={containerRef}>H</div>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        rtl={false}
+        theme="light"
+      />
     </>
   )
 }
