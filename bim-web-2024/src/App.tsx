@@ -6,9 +6,9 @@ import { ThreeJS } from './bimModel';
 
 function App() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
-    console.log("Init");
-    const threeJs = new ThreeJS(containerRef.current!);
+    const threeJs = new ThreeJS(containerRef.current!, canvasRef.current!);
     return () => {
       console.log("Dispose!");
       threeJs?.dispose();
@@ -19,7 +19,9 @@ function App() {
 
   return (
     <>
-      <div className="relative h-full w-full bg-indigo-300" ref={containerRef}>H</div>
+      <div className="relative h-full w-full bg-indigo-300" ref={containerRef}>
+        <canvas className="absolute h-full w-full" ref={canvasRef}></canvas>
+      </div>
       <ToastContainer
         position="top-right"
         autoClose={1000}
