@@ -140,9 +140,13 @@ export class ThreeJS implements OBC.Disposable {
     private gameLoop = () => {
         if (!this.currentCamera || !this._controls || !this._renderer || !this._labelRenderer) return;
         const delta = this._clock.getDelta();
-        this._controls.update(delta * 10);
-        this._renderer.render(this._scene, this.currentCamera);
+        const isUpdate = this._controls.update(delta * 10);
+        if (isUpdate) {
+            this._renderer.render(this._scene, this.currentCamera);
+            this._labelRenderer.render(this._scene, this.currentCamera);
+        }
         this._renderer.setAnimationLoop(this.gameLoop)
+
     }
     private initTool() {
         this._axes = new THREE.AxesHelper(1);
