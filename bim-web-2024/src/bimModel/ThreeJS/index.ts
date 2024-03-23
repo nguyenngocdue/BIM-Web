@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import CameraControls from "camera-controls";
 import * as OBC from "openbim-components";
+import { Geometry } from "./Geometry.ts";
 
 const near = 1, far = 1000;
 const pos0 = new THREE.Vector3(60, 60, 60);
@@ -75,6 +76,9 @@ export class ThreeJS implements OBC.Disposable {
         this.initTool();
         this.init();
         this.setupEvent = true;
+
+        const geometryObj = new Geometry();
+        geometryObj.initGeometry(this._scene)
     }
 
     async dispose() {
@@ -127,7 +131,7 @@ export class ThreeJS implements OBC.Disposable {
     //https://github.com/ThatOpen/engine_components/blob/main/src/core/SimpleCamera/index.ts
     private initControls(): CameraControls {
         const cameraControls = new CameraControls(this.currentCamera, this._renderer.domElement);
-        cameraControls.smoothTime = 0.25;
+        cameraControls.smoothTime = 0.5;
         return cameraControls;
     }
 
@@ -141,10 +145,9 @@ export class ThreeJS implements OBC.Disposable {
         if (!this.currentCamera || !this._controls || !this._renderer || !this._labelRenderer) return;
         const delta = this._clock.getDelta();
         const isUpdate = this._controls.update(delta * 10);
-        if (isUpdate) {
-            this._renderer.render(this._scene, this.currentCamera);
-            this._labelRenderer.render(this._scene, this.currentCamera);
-        }
+        this._renderer.render(this._scene, this.currentCamera);
+        // if (isUpdate) {// }
+        this._labelRenderer.render(this._scene, this.currentCamera);
         this._renderer.setAnimationLoop(this.gameLoop)
 
     }
@@ -161,6 +164,12 @@ export class ThreeJS implements OBC.Disposable {
     }
 
     init() {
+        // this._renderer.render(this._scene, this.currentCamera);
+        // this._labelRenderer.render(this._scene, this.currentCamera);
+        // this.currentCamera.up = new THREE.Vector3(0, 1, 0);
+        // console.log(this.currentCamera);
+
+
         this.gameLoop();
         this.clearAlpha = 0;
         this._scene.background = new THREE.Color('#366B60');
