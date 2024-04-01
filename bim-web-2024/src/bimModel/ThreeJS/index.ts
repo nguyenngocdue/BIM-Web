@@ -3,8 +3,11 @@ import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import CameraControls from "camera-controls";
 import * as OBC from "openbim-components";
 import { Geometry } from "./Geometry.ts";
+import { RayCast } from "./src/RayCast.ts";
+import { InstanceMesh } from "./src";
+import Stats from "stats.js";
 
-const near = 1, far = 1000;
+const near = 1, far = 1000000;
 const pos0 = new THREE.Vector3(60, 60, 60);
 CameraControls.install({
     THREE: {
@@ -38,6 +41,8 @@ export class ThreeJS implements OBC.Disposable {
     private _axes!: THREE.AxesHelper;
     private _ambientLight!: THREE.AmbientLight;
     private _directionalLight!: THREE.DirectionalLight;
+
+    private stats!: Stats;
 
     private _projection = false; // false: OrthographicCamera true: PerspectiveCamera
 
@@ -74,11 +79,23 @@ export class ThreeJS implements OBC.Disposable {
         this._controls = this.initControls();
         this._clock = this.initClock();
         this.initTool();
-        this.init();
+        this.initInstanceMesh();
         this.setupEvent = true;
 
         const geometryObj = new Geometry();
         geometryObj.initGeometry(this._scene)
+
+        // light
+        const _ambientLight = new THREE.AmbientLight(0xffffff, 1)
+        this._scene.add(_ambientLight)
+
+        // axis
+        const axes = new THREE.AxesHelper(10)
+        this._scene.add(axes)
+
+        this.initRayCast()
+        this.initStat();
+        this.init();
     }
 
     async dispose() {
@@ -90,6 +107,7 @@ export class ThreeJS implements OBC.Disposable {
         this._controls.dispose();
         this._clock?.stop();
         this._renderer.renderLists.dispose();
+        this.stats?.dom.remove();
         console.log("ThreeJS was Disposed!")
     }
 
@@ -144,11 +162,13 @@ export class ThreeJS implements OBC.Disposable {
     private gameLoop = () => {
         if (!this.currentCamera || !this._controls || !this._renderer || !this._labelRenderer) return;
         const delta = this._clock.getDelta();
-        const isUpdate = this._controls.update(delta * 10);
+        if (this.stats) this.stats.begin();
+        const isUpdate = this._controls.update(delta);
         this._renderer.render(this._scene, this.currentCamera);
         // if (isUpdate) {// }
         this._labelRenderer.render(this._scene, this.currentCamera);
         this._renderer.setAnimationLoop(this.gameLoop)
+        if (this.stats) this.stats.end();
 
     }
     private initTool() {
@@ -175,4 +195,27 @@ export class ThreeJS implements OBC.Disposable {
         this._scene.background = new THREE.Color('#366B60');
     }
 
+    private initRayCast() {
+        const rayCast = new RayCast(
+            this._renderer?.domElement,
+            this._scene,
+            this.currentCamera
+        );
+    }
+
+    private initInstanceMesh() {
+        new InstanceMesh(this._scene)
+    }
+
+    private initStat() {
+        if (import.meta.env.DEV) {
+            this.stats = new Stats();
+            this.stats.addPanel;
+            this.stats = new Stats();
+            this.stats.showPanel(0);
+            document.body.append(this.stats.dom);
+            this.stats.dom.style.left = "0px";
+
+        }
+    }
 }

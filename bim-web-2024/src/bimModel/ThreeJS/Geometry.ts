@@ -25,7 +25,7 @@ export class Geometry {
         // itemSize = 3 because there are 3 values (components) per vertex
         geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
-        console.log(geometry);
+        // console.log(geometry);
 
         const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const mesh = new THREE.Mesh(geometry, material);

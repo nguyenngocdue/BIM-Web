@@ -22,9 +22,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src"
-  ],
   "references": [
     {
       "path": "./tsconfig.node.json"
@@ -33,6 +30,12 @@
   "path": {
     "@bimModel/*": [
       "./src/bimModel/*"
-    ]
-  }
+    ],
+    "@component/*": [
+      "./src/component/*"
+    ],
+  },
+  "include": [
+    "src"
+  ],
 }
