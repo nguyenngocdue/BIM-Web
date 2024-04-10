@@ -3,7 +3,7 @@ import * as THREE from "three";
 import Stats from "stats.js";
 import { MyCustomToolComponent } from "./src";
 
-const a = 10;
+
 export class BasicComponent implements OBC.Disposable {
     readonly onDispose: OBC.Event<any> = new OBC.Event();
     private components!: OBC.Components;
@@ -50,12 +50,9 @@ export class BasicComponent implements OBC.Disposable {
         const matrixInverse = matrix.clone().transpose();
         scene.matrix.premultiply(matrix).multiply(matrixInverse);
     }
-    private action() {
-        alert("Hello")
-    }
+
     private accessGrid() {
         const myTool = new MyCustomToolComponent(this.components);
-        myTool.setUp();
 
         const toolbar = new OBC.Toolbar(this.components);
         // load model btn
@@ -65,7 +62,7 @@ export class BasicComponent implements OBC.Disposable {
         // change color element
         const changeColor = new OBC.Button(this.components);
         changeColor.materialIcon = "account_tree";
-        loadButton.onClick.add(this.action);
+        loadButton.onClick.add(myTool.action);
         this.components.ui.addToolbar(toolbar);
         toolbar.addChild(loadButton);
 
