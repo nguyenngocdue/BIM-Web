@@ -58,6 +58,7 @@ export class MyCustomToolComponent extends OBC.Component<any>
         input.remove();
     };
     private catchJsonFile(jsonFile: any) {
+        console.log(jsonFile);
         const { geometries, materials, object, textures, images } = jsonFile;
         if (!geometries || !materials || !object || !textures || !images) {
             throw new Error("Missing input requirement!")
@@ -121,6 +122,7 @@ export class MyCustomToolComponent extends OBC.Component<any>
                 if (typeof geometry !== "string" || typeof material !== "string")
                     continue;
                 const storageGeometry = this.uniqueGeometries[geometry];
+                // console.log(storageGeometry)
                 const storageMaterial = this.uniqueMaterials[material];
                 if (!storageGeometry || !storageMaterial) continue;
                 if (!geometryByMaterial[material])
@@ -145,10 +147,11 @@ export class MyCustomToolComponent extends OBC.Component<any>
         }
         if (newGeometries.length === 0) throw new Error("Something is wrong");
         const combine = mergeGeometries(newGeometries, true);
-        if (!combine) throw new Error("Can not merge geometry");
         combine.computeBoundingBox();
+        if (!combine) throw new Error("Can not merge geometry");
         const mesh = new THREE.Mesh(combine, newMaterials);
         scene.add(mesh);
+        // console.log(mesh);
         newGeometries.forEach((geo: THREE.BufferGeometry) => geo.dispose());
         this.uniqueGeometries = {};
         this.uniqueMaterials = {};

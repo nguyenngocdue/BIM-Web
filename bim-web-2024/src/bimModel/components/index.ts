@@ -57,7 +57,7 @@ export class BasicComponent implements OBC.Disposable {
         const toolbar = new OBC.Toolbar(this.components);
         // load model btn
         const loadButton = new OBC.Button(this.components);
-        loadButton.materialIcon = "download";
+        loadButton.materialIcon = "upload";
         loadButton.tooltip = "Load model";
         // change color element
         const changeColor = new OBC.Button(this.components);
