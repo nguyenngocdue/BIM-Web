@@ -1,0 +1,8 @@
+namespace CompressRevit; 
+table DotBimBufferMeshes {
+    meshid: int;
+    coordinates: [float];
+    indices: [int];
+}
+
+root_type DotBimSchemaBuffer;
