@@ -15,21 +15,14 @@ const plugins = [
 		tsconfig: 'tsconfig.rollup.json'
 	})
 ]
-const worker1 = {
-	input: "worker/worker1.ts",
+const Revit = {
+	input: "worker/Revit/RevitWorker.ts",
 	output: {
-		file: "src/bimModel/components/src/Worker/worker1.js",
+		file: "src/bimModel/components/src/Worker/RevitWorker.js",
 		format: "esm",
 	},
 	plugins: plugins
 }
-const worker2 = {
-	input: "worker/worker2.ts",
-	output: {
-		file: "src/bimModel/components/src/Worker/worker2.js",
-		format: "esm",
-	},
-	plugins: plugins
-}
+
 // This creates the bundle used by the examples
-export default [worker1, worker2];
+export default [Revit];

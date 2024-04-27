@@ -11,38 +11,62 @@ export interface IGEOMETRY {
 export class WorkerComponent extends OBC.Component<any> implements OBC.Disposable {
     static readonly uuid = "" as const;
     enabled = false;
-    static readonly _uuid = "28e87e9c-7d1e-44c5-84de-8cd3990f847e" as const;
+    static readonly uuid = "fa483703-cc59-4a3d-85ba-2753ee60063f" as const;
     readonly onDisposed: OBC.Event<any> = new OBC.Event();
-    private worker1: Worker = new Worker(new URL("./worker1.js", import.meta.url));
-    private worker2: Worker = new Worker(new URL("./worker2.js", import.meta.url));
+    private revitWorker: Worker = new Worker(new URL("./RevitWorker.js", import.meta.url));
     get() {
         throw new Error("Method is not implemented!")
     }
-
+    private uniqueGeometries: { [uuid: string]: THREE.BufferGeometry } = {};
+    private uniqueMaterials: { [uuid: string]: THREE.MeshLambertMaterial } = {};
 
     constructor(components: OBC.Components) {
         super(components);
-        this.components.tools.add(WorkerComponent._uuid, this);
-        this.init();
+        this.components.tools.add(WorkerComponent.uuid, this);
+        this.onMessage();
     }
+
+    private onMessage() {
+        this.revitWorker.onmessage = async (e: MessageEvent) => {
+            const { error, result } = e.data;
+            if (error) {
+                console.log(error);
+                return;
+            }
+            // const { geometries, material, metadata, children } = result as CompressBuffer;
+            // this.storageGeometries(geometries);
+            // this.storageMaterials(materials);
+            // this.storageObjects(children);
+        }
+    }
+
+    loadFile = async () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".gz";
+        input.multiple = false;
+        input.click();
+
+        input.onchange = async (e: any) => {
+            const file = e.target.files[0] as File;
+            const rawBuffer = await file.arrayBuffer();
+            this.revitWorker.postMessage({
+                action: "onLoad",
+                payload: new Uint8Array(rawBuffer)
+            });
+        }
+        input.remove();
+    };
+
+
+
+
 
     async dispose() {
         await this.onDisposed.trigger(this);
         this.onDisposed.reset();
         console.log("WorkerComponent disposed");
     }
-    private init() {
-        const map: Map<string, string> = new Map();
-        const data = { action: "init", payload: map }
-        this.worker1.postMessage(data)
-        this.worker1.onmessage = async (e: MessageEvent) => {
-            console.log(e.data)
-        }
 
-        this.worker2.postMessage(data)
-        this.worker2.onmessage = async (e: MessageEvent) => {
-            console.log(e.data)
-        }
-    }
 }
 OBC.ToolComponent.libraryUUIDs.add(WorkerComponent.uuid);

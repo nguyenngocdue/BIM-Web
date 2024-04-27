@@ -16,6 +16,7 @@
     "@tweenjs/tween.js": "^23.1.1",
     "bim-fragment": "^1.5.0",
     "camera-controls": "^2.8.3",
+    "flowbite-react": "^0.9.0",
     "openbim-components": "^1.4.15",
     "path": "^0.12.7",
     "react": "^18.2.0",

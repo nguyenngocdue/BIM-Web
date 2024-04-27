@@ -3,6 +3,8 @@ import { ToastContainer } from 'react-toastify';
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Viewer from './pages/viewer';
+import Home from './pages/home';
+import Project from './pages/project';
 
 function App() {
 
@@ -10,7 +12,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route index element={<div>Hello</div >} />
+          <Route index element={<Home />} />
+          <Route path="/project" element={<Project />} />
           <Route path="/viewer" element={<Viewer />} />
           <Route path="*" element={<div>Error</div>} />
         </Routes>

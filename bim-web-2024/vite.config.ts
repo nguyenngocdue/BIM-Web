@@ -20,11 +20,11 @@ export default defineConfig(() => {
     },
     resolver: {
       alias: {
-        '@bimModel': path.resolve(__dirname, './arc/bimModel'),
-        "@assets": path.resolve(__dirname, './src/assets'),
-        "@component": path.resolve(__dirname, './src/component'),
-        '@pages': path.resolve(__dirname, './src/pages')
-      }
+        "@bimModel": path.resolve(__dirname, "./src/bimModel"),
+        "@assets": path.resolve(__dirname, "./src/assets"),
+        "@component": path.resolve(__dirname, "./src/component"),
+        "@pages": path.resolve(__dirname, "./src/pages"),
+      },
     },
     build: {
       sourcemap: true,

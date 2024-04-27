@@ -65,7 +65,7 @@ export class BasicComponent implements OBC.Disposable {
         // change color element
         const changeColor = new OBC.Button(this.components);
         changeColor.materialIcon = "account_tree";
-        loadButton.onClick.add(myTool.action);
+        loadButton.onClick.add(worker.loadFile);
         this.components.ui.addToolbar(toolbar);
         toolbar.addChild(loadButton);
 
