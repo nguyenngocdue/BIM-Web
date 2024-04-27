@@ -1,7 +1,7 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-import { ObjectLoaderJson } from '../../../../Utils'
+// import { ObjectLoaderJson } from '../../../../Utils'
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 interface IGeometry {
@@ -24,7 +24,7 @@ export class MyCustomToolComponent extends OBC.Component<any>
         super(component);
         this.components.tools.add(MyCustomToolComponent.uuid, this);
     }
-    async update(delta?: number | undefined) {
+    async update(_delta?: number | undefined) {
         if (this.enabled) {
             await this.onBeforeUpdate.trigger(this);
             TWEEN.update();
@@ -38,12 +38,12 @@ export class MyCustomToolComponent extends OBC.Component<any>
         console.log("MyCustomToolComponent is disposed");
         //$
     }
-    get(...args: any) {
+    get() {
         throw new Error("Method is not implemented.")
     }
 
     action = () => {
-        const scene = this.components.scene.get();
+        // const _scene = this.components.scene.get();
         const input = document.createElement("input");
         input.type = "file";
         input.accept = ".json";

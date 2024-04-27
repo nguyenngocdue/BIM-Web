@@ -31,8 +31,14 @@
     "@bimModel/*": [
       "./src/bimModel/*"
     ],
+    "@assets/*": [
+      "./src/assets/*"
+    ],
     "@component/*": [
       "./src/component/*"
+    ],
+    "@pages/*": [
+      "./src/pages/*"
     ],
   },
   "include": [

@@ -1,11 +1,11 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
 import Stats from "stats.js";
-import { MyCustomToolComponent } from "./src";
+import { MyCustomToolComponent, WorkerComponent } from "./src";
 
 
 export class BasicComponent implements OBC.Disposable {
-    readonly onDispose: OBC.Event<any> = new OBC.Event();
+    readonly onDisposed: OBC.Event<any> = new OBC.Event();
     private components!: OBC.Components;
 
     constructor(private container: HTMLDivElement) {
@@ -15,7 +15,7 @@ export class BasicComponent implements OBC.Disposable {
     async dispose() {
         this.components?.dispose();
         await this.onDisposed.trigger(this);
-        this.onDispose.reset();
+        this.onDisposed.reset();
         console.log("Basic Component Disposed!")
 
     }
@@ -53,6 +53,9 @@ export class BasicComponent implements OBC.Disposable {
 
     private accessGrid() {
         const myTool = new MyCustomToolComponent(this.components);
+        myTool.enabled = true;
+        const worker = this.components.tools.get(WorkerComponent)
+        worker.enabled = true;
 
         const toolbar = new OBC.Toolbar(this.components);
         // load model btn

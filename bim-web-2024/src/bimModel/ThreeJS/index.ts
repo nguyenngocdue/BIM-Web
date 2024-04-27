@@ -3,7 +3,7 @@ import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import CameraControls from "camera-controls";
 import * as OBC from "openbim-components";
 import { Geometry } from "./Geometry.ts";
-import { RayCast } from "./src/RayCast.ts";
+// import { RayCast } from "./src/RayCast.ts";
 import { InstanceMesh } from "./src";
 import Stats from "stats.js";
 
@@ -39,8 +39,8 @@ export class ThreeJS implements OBC.Disposable {
 
     //tool
     private _axes!: THREE.AxesHelper;
-    private _ambientLight!: THREE.AmbientLight;
-    private _directionalLight!: THREE.DirectionalLight;
+    // private _ambientLight!: THREE.AmbientLight;
+    // private _directionalLight!: THREE.DirectionalLight;
 
     private stats!: Stats;
 
@@ -161,9 +161,9 @@ export class ThreeJS implements OBC.Disposable {
 
     private gameLoop = () => {
         if (!this.currentCamera || !this._controls || !this._renderer || !this._labelRenderer) return;
-        const delta = this._clock.getDelta();
+        // const delta = this._clock.getDelta();
         if (this.stats) this.stats.begin();
-        const isUpdate = this._controls.update(delta);
+        // const isUpdate = this._controls.update(delta);
         this._renderer.render(this._scene, this.currentCamera);
         // if (isUpdate) {// }
         this._labelRenderer.render(this._scene, this.currentCamera);
@@ -196,11 +196,11 @@ export class ThreeJS implements OBC.Disposable {
     }
 
     private initRayCast() {
-        const rayCast = new RayCast(
-            this._renderer?.domElement,
-            this._scene,
-            this.currentCamera
-        );
+        // const rayCast = new RayCast(
+        //     this._renderer?.domElement,
+        //     this._scene,
+        //     this.currentCamera
+        // );
     }
 
     private initInstanceMesh() {
