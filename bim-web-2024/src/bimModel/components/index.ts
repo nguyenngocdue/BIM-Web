@@ -54,7 +54,7 @@ export class BasicComponent implements OBC.Disposable {
     private accessGrid() {
         const myTool = new MyCustomToolComponent(this.components);
         myTool.enabled = true;
-        const worker = this.components.tools.get(WorkerComponent)
+        const worker = this.components.tools.get(WorkerComponent);
         worker.enabled = true;
 
         const toolbar = new OBC.Toolbar(this.components);

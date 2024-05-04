@@ -20,11 +20,14 @@ export class Decompress {
   constructor(
     private onSuccess: (data: any) => void,
     private onError: (error: any) => void
-  ) {}
+  ) { }
   async readFile(buffer: Uint8Array) {
     try {
       const before = performance.now();
       const newBuffer = pako.inflate(buffer);
+      console.log(newBuffer.length);
+
+
       const builder = new flatbuffers.ByteBuffer(newBuffer);
       const data = FB.CompressBuffer.getRootAsCompressBuffer(builder);
       const geometries = this.deCompressGeometries(data);
@@ -76,7 +79,7 @@ export class Decompress {
       const uv = this.deCompressUv(uv0);
       if (!uv) continue;
       if (!uniqueGeometries[uuid])
-        uniqueGeometries[uuid] = {uuid, position, uv} as IGeometryBuffer;
+        uniqueGeometries[uuid] = { uuid, position, uv } as IGeometryBuffer;
     }
     if (Object.keys(uniqueGeometries).length === 0) return null;
     return uniqueGeometries;
@@ -91,13 +94,13 @@ export class Decompress {
     for (let i = 0; i < array.length; i++) {
       index.push(i);
     }
-    return {itemSize, array};
+    return { itemSize, array };
   }
   private deCompressUv(position: FB.IUVBuffer): IUVBuffer | null {
     const itemSize = position.itemSize();
     const array = position.arrayArray();
     if (!itemSize || !array || array.length === 0) return null;
-    return {itemSize, array};
+    return { itemSize, array };
   }
   private deCompressMaterials(data: FB.CompressBuffer): MaterialBuffer | null {
     const uniqueMaterials: MaterialBuffer = {};
@@ -136,9 +139,9 @@ export class Decompress {
         const geometry = subChild.geometry();
         const material = subChild.material();
         if (!geometry || !material) continue;
-        subs.push({geometry, material} as ISubElementBuffer);
+        subs.push({ geometry, material } as ISubElementBuffer);
       }
-      children.push({userData, subChildren: subs} as IElementBuffer);
+      children.push({ userData, subChildren: subs } as IElementBuffer);
     }
     return children;
   }

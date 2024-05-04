@@ -3,6 +3,7 @@ import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 // import { ObjectLoaderJson } from '../../../../Utils'
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { Decompress } from "./src";
 
 interface IGeometry {
     material: THREE.MeshBasicMaterial;
@@ -52,8 +53,14 @@ export class MyCustomToolComponent extends OBC.Component<any>
 
         input.onchange = async (e: any) => {
             const file = e.target.files[0] as File;
-            const jsonFile = JSON.parse(await file.text());
-            this.catchJsonFile(jsonFile);
+            // const jsonFile = JSON.parse(await file.text());
+            // this.catchJsonFile(jsonFile);
+            console.log(123);
+
+            await new Decompress(this.components.scene.get()).readFile(
+                new Uint8Array(await file.arrayBuffer())
+            );
+
         }
         input.remove();
     };
