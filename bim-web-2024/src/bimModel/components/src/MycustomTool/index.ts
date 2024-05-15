@@ -1,30 +1,31 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-// import { ObjectLoaderJson } from '../../../../Utils'
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { Decompress } from "./src";
 
-interface IGeometry {
-    material: THREE.MeshBasicMaterial;
+export interface IGeometry {
+    material: THREE.MeshLambertMaterial;
     geometries: THREE.BufferGeometry[];
 }
-
-export class MyCustomToolComponent extends OBC.Component<any>
+export class MyCustomToolComponent
+    extends OBC.Component<any>
     implements OBC.Disposable, OBC.Updateable {
-    static readonly uuid = "281d17dd-605e-4ab9-b6bc-e0e1e183d8da" as const;
+    static readonly uuid = "bda2e0a7-d7bb-499f-a9a7-bdcf17a33678" as const;
     enabled = true;
     readonly onDisposed: OBC.Event<any> = new OBC.Event();
     readonly onAfterUpdate: OBC.Event<any> = new OBC.Event();
     readonly onBeforeUpdate: OBC.Event<any> = new OBC.Event();
-    readonly loader = new THREE.ObjectLoader();
-    private uniqueGeometries: { [uid: string]: THREE.BufferGeometry } = {};
-    private uniqueMaterials: { [uid: string]: THREE.MeshLambertMaterial } = {};
-
-    constructor(component: OBC.Components) {
-        super(component);
+    private uniqueGeometries: { [uuid: string]: THREE.BufferGeometry } = {};
+    private uniqueMaterials: { [uuid: string]: THREE.MeshLambertMaterial } = {};
+    /**
+     *
+     */
+    constructor(components: OBC.Components) {
+        super(components);
         this.components.tools.add(MyCustomToolComponent.uuid, this);
     }
+
     async update(_delta?: number | undefined) {
         if (this.enabled) {
             await this.onBeforeUpdate.trigger(this);
@@ -32,57 +33,52 @@ export class MyCustomToolComponent extends OBC.Component<any>
             await this.onAfterUpdate.trigger(this);
         }
     }
-
     async dispose() {
         await this.onDisposed.trigger(this);
         this.onDisposed.reset();
-        console.log("MyCustomToolComponent is disposed");
-        //$
+        console.log("MyCustomToolComponent disposed!");
     }
     get() {
-        throw new Error("Method is not implemented.")
+        throw new Error("Method not implemented.");
     }
 
     action = () => {
-        // const _scene = this.components.scene.get();
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = ".json";
+        input.accept = ".gz";
         input.multiple = false;
         input.click();
-
         input.onchange = async (e: any) => {
             const file = e.target.files[0] as File;
             // const jsonFile = JSON.parse(await file.text());
             // this.catchJsonFile(jsonFile);
-            console.log(123);
-
             await new Decompress(this.components.scene.get()).readFile(
                 new Uint8Array(await file.arrayBuffer())
             );
-
-        }
+        };
         input.remove();
     };
     private catchJsonFile(jsonFile: any) {
         console.log(jsonFile);
         const { geometries, materials, object, textures, images } = jsonFile;
-        if (!geometries || !materials || !object || !textures || !images) {
-            throw new Error("Missing input requirement!")
-        }
+        if (!geometries || !materials || !object || !textures || !images)
+            throw new Error("Missing input requirement!");
+        if (!object.children || !Array.isArray(object.children))
+            throw new Error("Missing children in object");
         // storage geometries
         this.storageGeometries(geometries);
         this.storageMaterials(materials);
         this.storageObject(object.children);
     }
-
     private storageGeometries(geometries: any[]) {
         for (const geo of geometries) {
             const { uuid, data } = geo;
             if (!uuid || !data) continue;
             if (!data.attributes) continue;
             const { position, uv } = data.attributes;
+            // check if position or uv
             if (!position || !uv) continue;
+            // check array
             if (!position.array || !uv.array) continue;
             if (!position.itemSize || !uv.itemSize) continue;
             if (!Array.isArray(position.array) || !Array.isArray(uv.array)) continue;
@@ -94,28 +90,32 @@ export class MyCustomToolComponent extends OBC.Component<any>
             for (let i = 0; i < position.array.length / 3; i++) {
                 index.push(i);
             }
-            geometry.setAttribute("position", new THREE.BufferAttribute(newPosition, position.itemSize));
-            geometry.setAttribute("uv", new THREE.BufferAttribute(newPUv, uv.itemSize));
+            geometry.setAttribute(
+                "position",
+                new THREE.BufferAttribute(newPosition, position.itemSize)
+            );
+            geometry.setAttribute(
+                "uv",
+                new THREE.BufferAttribute(newPUv, uv.itemSize)
+            );
             geometry.setIndex(index);
             geometry.computeVertexNormals();
             if (!this.uniqueGeometries[uuid]) this.uniqueGeometries[uuid] = geometry;
         }
     }
-    private storageMaterials(material: any[]) {
-        for (const mat of material) {
+    private storageMaterials(materials: any[]) {
+        for (const mat of materials) {
             const { color, transparent, opacity, uuid } = mat;
             if (!color || !opacity || !uuid) continue;
             if (typeof color !== "string" || typeof opacity !== "number") continue;
             const material = new THREE.MeshLambertMaterial({
                 color: parseInt(color, 16),
                 opacity,
-                transparent
-            })
+                transparent,
+            });
             if (!this.uniqueMaterials[uuid]) this.uniqueMaterials[uuid] = material;
-
         }
     }
-
     private storageObject(parentChildren: any[]) {
         const scene = this.components.scene.get();
         const geometryByMaterial: { [uuid: string]: IGeometry } = {};
@@ -129,7 +129,6 @@ export class MyCustomToolComponent extends OBC.Component<any>
                 if (typeof geometry !== "string" || typeof material !== "string")
                     continue;
                 const storageGeometry = this.uniqueGeometries[geometry];
-                // console.log(storageGeometry)
                 const storageMaterial = this.uniqueMaterials[material];
                 if (!storageGeometry || !storageMaterial) continue;
                 if (!geometryByMaterial[material])
@@ -140,7 +139,8 @@ export class MyCustomToolComponent extends OBC.Component<any>
                 geometryByMaterial[material].geometries.push(storageGeometry);
             }
         }
-        if (Object.keys(geometryByMaterial).length === 0) throw new Error("Something is wrong");
+        if (Object.keys(geometryByMaterial).length === 0)
+            throw new Error("Something is wrong");
         const newMaterials: THREE.MeshLambertMaterial[] = [];
         const newGeometries: THREE.BufferGeometry[] = [];
         for (const uuid in geometryByMaterial) {
@@ -154,15 +154,13 @@ export class MyCustomToolComponent extends OBC.Component<any>
         }
         if (newGeometries.length === 0) throw new Error("Something is wrong");
         const combine = mergeGeometries(newGeometries, true);
-        combine.computeBoundingBox();
         if (!combine) throw new Error("Can not merge geometry");
+        combine.computeBoundingBox();
         const mesh = new THREE.Mesh(combine, newMaterials);
         scene.add(mesh);
-        // console.log(mesh);
         newGeometries.forEach((geo: THREE.BufferGeometry) => geo.dispose());
         this.uniqueGeometries = {};
         this.uniqueMaterials = {};
     }
 }
-
 OBC.ToolComponent.libraryUUIDs.add(MyCustomToolComponent.uuid);

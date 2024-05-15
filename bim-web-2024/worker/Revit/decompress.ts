@@ -22,6 +22,7 @@ export class Decompress {
     private onError: (error: any) => void
   ) { }
   async readFile(buffer: Uint8Array) {
+    console.log("123");
     try {
       const before = performance.now();
       const newBuffer = pako.inflate(buffer);
@@ -49,6 +50,7 @@ export class Decompress {
       };
 
       const children = this.deCompressChildren(data);
+      console.log(children);
       if (children.length === 0) {
         this.onError("Can not Decompress Children");
         return;
@@ -64,19 +66,25 @@ export class Decompress {
       this.onError(error);
     }
   }
+
   private deCompressGeometries(data: FB.CompressBuffer): GeometryBuffer | null {
     const uniqueGeometries: GeometryBuffer = {};
+
     for (let i = 0; i < data.geometriesLength(); i++) {
       const geometry = data.geometries(i);
       if (!geometry) continue;
       const uuid = geometry.uuui();
       const position0 = geometry.position();
       const uv0 = geometry.uv();
+
       if (!uuid || !position0 || !uv0) continue;
+
       const index: number[] = [];
       const position = this.deCompressPosition(position0, index);
+
       if (!position) continue;
       const uv = this.deCompressUv(uv0);
+
       if (!uv) continue;
       if (!uniqueGeometries[uuid])
         uniqueGeometries[uuid] = { uuid, position, uv } as IGeometryBuffer;
@@ -84,6 +92,7 @@ export class Decompress {
     if (Object.keys(uniqueGeometries).length === 0) return null;
     return uniqueGeometries;
   }
+
   private deCompressPosition(
     position: FB.IPositionBuffer,
     index: number[]
@@ -96,6 +105,8 @@ export class Decompress {
     }
     return { itemSize, array };
   }
+
+
   private deCompressUv(position: FB.IUVBuffer): IUVBuffer | null {
     const itemSize = position.itemSize();
     const array = position.arrayArray();
@@ -103,6 +114,7 @@ export class Decompress {
     return { itemSize, array };
   }
   private deCompressMaterials(data: FB.CompressBuffer): MaterialBuffer | null {
+    console.log(data);
     const uniqueMaterials: MaterialBuffer = {};
     for (let i = 0; i < data.materialsLength(); i++) {
       const material = data.materials(i);
@@ -124,6 +136,8 @@ export class Decompress {
     if (Object.keys(uniqueMaterials).length === 0) return null;
     return uniqueMaterials;
   }
+
+
   private deCompressChildren(data: FB.CompressBuffer): IElementBuffer[] {
     const children: IElementBuffer[] = [];
     for (let i = 0; i < data.childrenLength(); i++) {

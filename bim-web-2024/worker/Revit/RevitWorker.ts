@@ -16,7 +16,6 @@ const handleMap = {
 };
 self.onmessage = async (e: MessageEvent) => {
     const { action, payload } = e.data;
-    // const handler = handleMap[action as keyof typeof handleMap];
-    // if (handler) handler(payload);
-    console.log(action, payload);
-}
+    const handler = handleMap[action as keyof typeof handleMap];
+    if (handler) handler(payload);
+};

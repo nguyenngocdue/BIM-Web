@@ -3,6 +3,7 @@ import extensions from './rollup-extensions.mjs';
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import json from "@rollup/plugin-json";
+import copy from 'rollup-plugin-copy'
 
 const plugins = [
 	extensions({
@@ -21,8 +22,12 @@ const Revit = {
 		file: "src/bimModel/components/src/Worker/RevitWorker.js",
 		format: "esm",
 	},
-	plugins: plugins
+	plugins: [...plugins, copy({
+		targets: [
+			{ src: 'worker/Revit/RevitType.ts', dest: 'src/bimModel/components/src/Worker' },
+		]
+	})],
 }
 
 // This creates the bundle used by the examples
-export default [Revit];
+export default [Revit,];

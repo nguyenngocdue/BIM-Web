@@ -16,7 +16,7 @@ export interface IGeometry {
 export class WorkerComponent
     extends OBC.Component<any>
     implements OBC.Disposable {
-    static readonly uuid = "2c176703-8c12-4bae-bee6-a6222df27c30" as const;
+    static readonly uuid = "c473430c-4518-45e7-8dd7-632bf6ea569d" as const;
     enabled = false;
     readonly onDisposed: OBC.Event<any> = new OBC.Event();
     private revitWorker: Worker = new Worker(

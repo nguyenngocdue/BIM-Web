@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Viewer from './pages/viewer';
 import Home from './pages/home';
 import Project from './pages/project';
+import PrivateLayout from './pages/layout/PrivateLayout';
 
 function App() {
 
@@ -13,8 +14,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/project" element={<Project />} />
-          <Route path="/viewer" element={<Viewer />} />
+          <Route element={<PrivateLayout />}>
+            <Route path="/project" element={<Project />} />
+            <Route path="/viewer" element={<Viewer />} />
+          </Route>
           <Route path="*" element={<div>Error</div>} />
         </Routes>
       </BrowserRouter>
@@ -25,6 +28,8 @@ function App() {
         autoClose={1000}
         hideProgressBar={false}
         rtl={false}
+        closeOnClick
+        newestOnTop={false}
         theme="light"
       />
     </>

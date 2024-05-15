@@ -52,7 +52,7 @@ export class BasicComponent implements OBC.Disposable {
     }
 
     private accessGrid() {
-        const myTool = new MyCustomToolComponent(this.components);
+        const myTool = this.components.tools.get(MyCustomToolComponent);
         myTool.enabled = true;
         const worker = this.components.tools.get(WorkerComponent);
         worker.enabled = true;
@@ -65,9 +65,9 @@ export class BasicComponent implements OBC.Disposable {
         // change color element
         const changeColor = new OBC.Button(this.components);
         changeColor.materialIcon = "account_tree";
-        loadButton.onClick.add(worker.loadFile);
-        this.components.ui.addToolbar(toolbar);
+        loadButton.onClick.add(myTool.action);
         toolbar.addChild(loadButton);
+        this.components.ui.addToolbar(toolbar);
 
         const stats = new Stats();
         stats.showPanel(0);

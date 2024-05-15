@@ -2,8 +2,8 @@ import * as flatbuffers from "flatbuffers";
 import * as pako from "pako";
 import * as FB from "./compress-revit";
 import * as THREE from "three";
-import {mergeBufferGeometries} from "three-stdlib";
-import {IGeometry} from "..";
+import { mergeBufferGeometries } from "three-stdlib";
+import { IGeometry } from "..";
 
 export interface IMetadata {
   type?: string;
@@ -12,13 +12,13 @@ export interface IMetadata {
   projectName?: string;
 }
 export class Decompress {
-  private uniqueGeometries: {[uuid: string]: THREE.BufferGeometry} = {};
-  private uniqueMaterials: {[uuid: string]: THREE.MeshLambertMaterial} = {};
+  private uniqueGeometries: { [uuid: string]: THREE.BufferGeometry } = {};
+  private uniqueMaterials: { [uuid: string]: THREE.MeshLambertMaterial } = {};
   private metadata!: IMetadata;
   /**
    *
    */
-  constructor(private scene: THREE.Scene) {}
+  constructor(private scene: THREE.Scene) { }
   async readFile(buffer: Uint8Array) {
     const before = performance.now();
     const newBuffer = pako.inflate(buffer);
@@ -96,7 +96,7 @@ export class Decompress {
     }
   }
   private deCompressChildren(data: FB.CompressBuffer) {
-    const geometryByMaterial: {[uuid: string]: IGeometry} = {};
+    const geometryByMaterial: { [uuid: string]: IGeometry } = {};
     for (let i = 0; i < data.childrenLength(); i++) {
       const child = data.children(i);
       if (!child) continue;
@@ -126,7 +126,7 @@ export class Decompress {
     const newMaterials: THREE.MeshLambertMaterial[] = [];
     const newGeometries: THREE.BufferGeometry[] = [];
     for (const uuid in geometryByMaterial) {
-      const {material, geometries} = geometryByMaterial[uuid];
+      const { material, geometries } = geometryByMaterial[uuid];
       if (geometries.length === 0) continue;
       const merged = mergeBufferGeometries(geometries);
       if (!merged) throw new Error("Can not merge geometry");
